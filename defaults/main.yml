@@ -1,0 +1,10 @@
+fakecert_ca_name: "Private Testing CA"
+
+fakecert_country: "XX"
+fakecert_state: "XX"
+fakecert_location: "Testing"
+fakecert_organization: "Testing CA by Ansible"
+fakecert_organizational_unit: "Testing CA by Ansible"
+
+fakecerts_dir: '/etc/pki/fakecerts'
+fakecerts_user: 'root'

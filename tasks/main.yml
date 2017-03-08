@@ -1,0 +1,62 @@
+- include: prepare-ca-certs.yml
+  run_once: yes
+
+- name: "Prepare local certificate dir"
+  delegate_to: localhost
+  become: false
+  file:
+    dest: "files/ca/{{ ansible_hostname }}"
+    state: directory
+
+- name: "Generate certificate"
+  delegate_to: localhost
+  become: false
+  template:
+    src: "plain-csr.json"
+    dest: "files/ca/{{ ansible_hostname }}/csr.json"
+  register: _csr
+
+- name: "Drop old cert when CSR changed"
+  delegate_to: localhost
+  become: false
+  file:
+    name: files/ca/{{ ansible_hostname }}/cert.pem
+    state: absent
+  when: _csr|changed
+
+- name: "Prepare certificate"
+  delegate_to: localhost
+  become: false
+  shell: |
+      cfssl gencert -ca ../ca.pem -ca-key ../ca-key.pem \
+            -config=../ca-config.json \
+            -profile kubernetes csr.json \
+          | cfssljson -bare
+  args:
+    chdir: 'files/ca/{{ ansible_hostname }}'
+    creates: cert.pem
+
+- name: Prepare PKI directory
+  file:
+    path: '{{ fakecerts_dir }}'
+    state: directory
+
+- name: Copy CA certificate
+  copy:
+    src: '{{ item.value }}'
+    dest: '{{ fakecerts_dir }}/{{ item.key }}'
+  with_dict:
+      ca.pem:   'ca/ca.pem'
+      cert.pem: 'ca/{{ ansible_hostname }}/cert.pem'
+      cert.key: 'ca/{{ ansible_hostname }}/cert-key.pem'
+
+- name: Copy private keys
+  copy:
+    src: '{{ item.value }}'
+    dest: '{{ fakecerts_dir }}/{{ ansible_hostname }}.{{ item.key }}'
+    mode: 0700
+    owner: '{{ fakecerts_user }}'
+  with_dict:
+      pem: 'ca/{{ ansible_hostname }}/cert.pem'
+      key: 'ca/{{ ansible_hostname }}/cert-key.pem'
+

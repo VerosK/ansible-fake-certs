@@ -1,0 +1,24 @@
+- name: Create dir for CA certificates
+  delegate_to: localhost
+  become: false
+  file:
+    name: "files/ca"
+    state: directory
+
+- name: Copy CA config files
+  delegate_to: localhost
+  become: false
+  template:
+    dest: files/ca/{{ item }}
+    src: '{{ item }}'
+  with_items:
+    - ca-csr.json
+    - ca-config.json
+
+- name: "Prepare CA certificate"
+  delegate_to: localhost
+  become: false
+  shell: "cfssl gencert -initca ca-csr.json | cfssljson -bare ca"
+  args:
+    chdir: files/ca
+    creates: ca-key.pem

@@ -1,0 +1,25 @@
+{
+  "CN": "{{ fakecert_name }}",
+  "hosts": [
+    {% if fakecert_alt_name is defined %}
+      "{{ fakecert_alt_name }}",
+    {% endif %}
+      "{{ ansible_nodename }}",
+      "{{ ansible_host }}",
+      "127.0.0.1",
+      "{{ ansible_default_ipv4.address }}"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "{{ fakecert_country }}",
+      "ST": "{{ fakecert_state }}",
+      "L": "{{ fakecert_location }}",
+      "O": "{{ fakecert_organization }}",
+      "OU": "{{ fakecert_organizational_unit }}"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "CN": "{{ fakecert_ca_name }}",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "{{ fakecert_country }}",
+      "ST": "{{ fakecert_state }}",
+      "L": "{{ fakecert_location }}",
+      "O": "{{ fakecert_organization }}",
+      "OU": "{{ fakecert_organizational_unit }}"
+    }
+  ]
+}
