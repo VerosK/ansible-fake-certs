@@ -10,9 +10,10 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - xenial
-    - name: CentOS
+    - name: EL
       versions:
         - 7
+        - 6
   galaxy_tags:
     - system
 dependencies: []
